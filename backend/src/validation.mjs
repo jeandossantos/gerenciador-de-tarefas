@@ -4,7 +4,7 @@ function existsOrError(value, msg, ClassError) {
   if (typeof value === 'string' && !value.trim()) throw new ClassError(msg);
 }
 
-function notExistsOrError(value, msg) {
+function notExistsOrError(value, msg, ClassError) {
   try {
     existsOrError(value, msg);
   } catch (msg) {
@@ -13,7 +13,7 @@ function notExistsOrError(value, msg) {
   throw new ClassError(msg);
 }
 
-function equalsOrError(valueA, valueB, msg) {
+function equalsOrError(valueA, valueB, msg, ClassError) {
   if (valueA !== valueB) throw new ClassError(msg);
 }
 
