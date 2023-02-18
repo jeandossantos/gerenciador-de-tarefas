@@ -5,6 +5,10 @@ export class UserObjectMother {
     return UserDataBuilder.validUser().build();
   }
 
+  static withInvalidId() {
+    return UserDataBuilder.validUser().withInvalidId().build();
+  }
+
   static withInvalidName() {
     return UserDataBuilder.validUser().withInvalidName().build();
   }
