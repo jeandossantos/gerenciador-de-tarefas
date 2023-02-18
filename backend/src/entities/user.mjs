@@ -1,19 +1,19 @@
 export class User {
   constructor({
-    id,
+    id = undefined,
     name,
     initials,
     email,
     password,
     confirmPassword,
-    deletedAt,
+    deletedAt = undefined,
   }) {
-    this.id = id || undefined;
-    this.name = name || undefined;
-    this.initials = initials || undefined;
-    this.email = email || undefined;
-    this.password = password || undefined;
-    this.confirmPassword = confirmPassword || undefined;
-    this.deletedAt = deletedAt || undefined;
+    this.id = id;
+    this.name = name;
+    this.initials = initials;
+    this.email = email;
+    this.password = password;
+    this.confirmPassword = confirmPassword;
+    this.deletedAt = deletedAt;
   }
 }
