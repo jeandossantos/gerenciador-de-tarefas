@@ -3,6 +3,7 @@ import { User } from '../../../src/entities/user.mjs';
 export class UserDataBuilder {
   constructor() {
     this.userData = {
+      id: 1,
       name: 'teste da silva',
       email: 'test@test.com',
       initials: 'TS',
@@ -13,6 +14,12 @@ export class UserDataBuilder {
 
   static validUser() {
     return new UserDataBuilder();
+  }
+
+  withInvalidId() {
+    this.userData.id = 'invalid-id';
+
+    return this;
   }
 
   withInvalidName() {
