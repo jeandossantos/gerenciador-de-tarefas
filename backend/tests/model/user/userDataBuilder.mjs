@@ -6,7 +6,6 @@ export class UserDataBuilder {
       name: 'teste da silva',
       email: 'test@test.com',
       initials: 'TS',
-      admin: true,
       password: 'password',
       confirmedPassword: 'password',
     };
@@ -24,6 +23,20 @@ export class UserDataBuilder {
 
   withInvalidEmail() {
     this.userData.email = 'test=test.com';
+
+    return this;
+  }
+
+  withInvalidInitials() {
+    this.userData.initials = 'J%';
+
+    return this;
+  }
+
+  withInvalidPassword() {
+    this.userData.password = '12345';
+
+    return this;
   }
 
   build() {
