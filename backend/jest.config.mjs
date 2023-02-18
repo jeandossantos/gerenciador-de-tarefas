@@ -3,7 +3,7 @@ export default {
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   coverageReporters: ['json', 'text', 'lcov', 'clover'],
-  collectCoverageFrom: ['src/**/*.js', '!src/index.js'],
+  collectCoverageFrom: ['src/**/*.mjs', '!src/index.js'],
   coverageThreshold: {
     global: {
       branch: 100,
@@ -14,6 +14,6 @@ export default {
   },
   maxWorkers: '50%',
   testEnvironment: 'node',
-  watchPatchIgnorePatterns: ['node_modules'],
+  watchPathIgnorePatterns: ['node_modules'],
   transformIgnorePatterns: ['node_modules'],
 };
