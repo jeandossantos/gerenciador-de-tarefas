@@ -5,12 +5,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --watch --runInBand --no-chace --config"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --watch --runInBand --no-chace --config",
+    "test:cov": "NODE_OPTIONS=--experimental-vm-modules npx jest --config ./jest.config.mjs --coverage"
   },
   "keywords": [],
   "author": "jeandossantos",
   "license": "ISC",
   "devDependencies": {
     "jest": "^29.4.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0"
   }
 }
