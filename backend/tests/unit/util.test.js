@@ -1,7 +1,7 @@
 import { jest, test, describe, expect, beforeEach } from '@jest/globals';
 import bcrypt from 'bcrypt';
 
-import { Util } from '../src/utils/util.mjs';
+import { Util } from '../../src/utils/util.mjs';
 
 describe('#Util password', () => {
   beforeEach(() => {

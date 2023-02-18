@@ -4,7 +4,7 @@ import {
   equalsOrError,
   existsOrError,
   notExistsOrError,
-} from '../src/validation.mjs';
+} from '../../src/validation.mjs';
 
 describe('#Validation', () => {
   beforeEach(() => {
