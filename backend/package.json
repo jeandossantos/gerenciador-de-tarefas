@@ -1,0 +1,16 @@
+{
+  "name": "@jeandossantos/backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --watch --runInBand --no-chace --config"
+  },
+  "keywords": [],
+  "author": "jeandossantos",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.4.3"
+  }
+}
