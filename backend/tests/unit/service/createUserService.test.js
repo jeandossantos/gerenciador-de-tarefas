@@ -141,4 +141,6 @@ describe('#CreateUserService', () => {
     expect(userRepositoryMock.create).toHaveBeenCalled();
     expect(userRepositoryMock.findByEmail).toHaveBeenCalled();
   });
+
+  test.todo('#CreateUserService should create a task after creating a user');
 });
