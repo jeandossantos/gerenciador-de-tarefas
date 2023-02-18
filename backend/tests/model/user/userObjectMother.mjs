@@ -12,4 +12,16 @@ export class UserObjectMother {
   static withInvalidEmail() {
     return UserDataBuilder.validUser().withInvalidEmail().build();
   }
+
+  static withInvalidInitials() {
+    return UserDataBuilder.validUser().withInvalidInitials().build();
+  }
+
+  static withInvalidPassword() {
+    return UserDataBuilder.validUser().withInvalidPassword().build();
+  }
+
+  static withInvalidConfirmPassword() {
+    return UserDataBuilder.validUser().withInvalidConfirmPassword().build();
+  }
 }
