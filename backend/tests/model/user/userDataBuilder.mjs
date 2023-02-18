@@ -7,7 +7,7 @@ export class UserDataBuilder {
       email: 'test@test.com',
       initials: 'TS',
       password: 'password',
-      confirmedPassword: 'password',
+      confirmPassword: 'password',
     };
   }
 
@@ -39,9 +39,13 @@ export class UserDataBuilder {
     return this;
   }
 
-  build() {
-    Reflect.deleteProperty(this.userData, 'confirmedPassword');
+  withInvalidConfirmPassword() {
+    this.userData.confirmPassword = 'invalid-password';
 
+    return this;
+  }
+
+  build() {
     return new User(this.userData);
   }
 }
