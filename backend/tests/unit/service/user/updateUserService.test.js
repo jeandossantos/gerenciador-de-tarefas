@@ -1,7 +1,9 @@
 import { jest, test, describe, expect, beforeEach } from '@jest/globals';
-import { UserError } from '../../../src/errors/userError.mjs';
-import { UpdateUserService } from '../../../src/service/updateUserService.mjs';
-import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
+
+import { UpdateUserService } from '../../../../src/service/updateUserService.mjs';
+import { UserError } from '../../../../src/errors/userError.mjs';
+import { UserObjectMother } from '../../../model/user/userObjectMother.mjs';
+import { Util } from '../../../../src/utils/util.mjs';
 
 describe('#UpdateUserService', () => {
   beforeEach(() => {

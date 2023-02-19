@@ -1,9 +1,8 @@
 import { jest, test, describe, expect, beforeEach } from '@jest/globals';
-import { UserError } from '../../../src/errors/userError.mjs';
-import { RemoveUserService } from '../../../src/service/removeUserService.mjs';
-import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
-
-import { Util } from '../../../src/utils/util.mjs';
+import { UserError } from '../../../../src/errors/userError.mjs';
+import { UserObjectMother } from '../../../model/user/userObjectMother.mjs';
+import { RemoveUserService } from '../../../../src/service/removeUserService.mjs';
+import { Util } from '../../../../src/utils/util.mjs';
 
 describe('#RemoveUserService', () => {
   beforeEach(() => {
@@ -73,11 +72,9 @@ describe('#RemoveUserService', () => {
   test('#RemoveUserService should remove a user', async () => {
     const userRepositoryMock = {
       remove: jest.fn(),
-      findById: jest
-        .fn()
-        .mockReturnValue({
-          password: Util.encryptPassword(UserObjectMother.valid().password),
-        }),
+      findById: jest.fn().mockReturnValue({
+        password: Util.encryptPassword(UserObjectMother.valid().password),
+      }),
     };
 
     const user = UserObjectMother.valid();
@@ -86,9 +83,7 @@ describe('#RemoveUserService', () => {
       userRepository: userRepositoryMock,
     });
 
-    const expectedError = new UserError('Senha do usuário incorreta!');
-
-    const result = await removeUserService.execute(user);
+    await removeUserService.execute(user);
 
     expect(userRepositoryMock.findById).toHaveBeenCalled();
     expect(userRepositoryMock.remove).toHaveBeenCalled();
