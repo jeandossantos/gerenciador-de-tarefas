@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import { UserError } from '../errors/userError.mjs';
-import { equalsOrError } from '../validation.mjs';
-import { Util } from '../utils/util.mjs';
+import { UserError } from '../../errors/userError.mjs';
+import { equalsOrError } from '../../validation.mjs';
+import { Util } from '../../utils/util.mjs';
 
 function updateUserPasswordServiceValidation(user) {
   if (user.oldPassword.length <= 5) {

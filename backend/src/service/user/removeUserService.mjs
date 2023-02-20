@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-import { UserError } from '../errors/userError.mjs';
+import { UserError } from '../../errors/userError.mjs';
 
 export function removeUserServiceValidation(user) {
   if (isNaN(user.id)) {

@@ -1,6 +1,6 @@
 import { jest, test, describe, expect, beforeEach } from '@jest/globals';
 
-import { UpdateUserPasswordService } from '../../../../src/service/updateUserPasswordService.mjs';
+import { UpdateUserPasswordService } from '../../../../src/service/user/updateUserPasswordService.mjs';
 import { UserObjectMother } from '../../../model/user/userObjectMother.mjs';
 import { UserError } from '../../../../src/errors/userError.mjs';
 import { Util } from '../../../../src/utils/util.mjs';

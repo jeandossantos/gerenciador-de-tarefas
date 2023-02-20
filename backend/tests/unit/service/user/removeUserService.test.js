@@ -1,7 +1,7 @@
 import { jest, test, describe, expect, beforeEach } from '@jest/globals';
 import { UserError } from '../../../../src/errors/userError.mjs';
 import { UserObjectMother } from '../../../model/user/userObjectMother.mjs';
-import { RemoveUserService } from '../../../../src/service/removeUserService.mjs';
+import { RemoveUserService } from '../../../../src/service/user/removeUserService.mjs';
 import { Util } from '../../../../src/utils/util.mjs';
 
 describe('#RemoveUserService', () => {

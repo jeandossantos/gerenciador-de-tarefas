@@ -1,5 +1,5 @@
-import { UserError } from '../errors/userError.mjs';
-import { existsOrError } from '../validation.mjs';
+import { UserError } from '../../errors/userError.mjs';
+import { existsOrError } from '../../validation.mjs';
 
 export function updateUserServiceValidation(user) {
   if (isNaN(user.id)) {

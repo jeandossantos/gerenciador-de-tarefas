@@ -1,5 +1,6 @@
-import { UserError } from '../../errors/userError.mjs';
 import { Util } from '../../utils/util.mjs';
+import { UserError } from '../../errors/userError.mjs';
+
 import {
   equalsOrError,
   existsOrError,
