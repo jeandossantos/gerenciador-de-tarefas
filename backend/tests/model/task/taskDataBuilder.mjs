@@ -17,6 +17,12 @@ export class TaskDataBuilder {
     return new TaskDataBuilder();
   }
 
+  withInvalidId() {
+    this.tarefaData.id = 'abc';
+
+    return this;
+  }
+
   withInvalidName() {
     this.tarefaData.name = '';
 
