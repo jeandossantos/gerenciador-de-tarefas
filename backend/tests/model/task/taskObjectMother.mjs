@@ -5,6 +5,10 @@ export class TaskObjectMother {
     return TaskDataBuilder.validTask().build();
   }
 
+  static withInvalidId() {
+    return TaskDataBuilder.validTask().withInvalidId().build();
+  }
+
   static withInvalidName() {
     return TaskDataBuilder.validTask().withInvalidName().build();
   }
