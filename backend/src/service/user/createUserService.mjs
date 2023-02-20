@@ -1,10 +1,10 @@
-import { UserError } from '../errors/userError.mjs';
-import { Util } from '../utils/util.mjs';
+import { UserError } from '../../errors/userError.mjs';
+import { Util } from '../../utils/util.mjs';
 import {
   equalsOrError,
   existsOrError,
   notExistsOrError,
-} from '../validation.mjs';
+} from '../../validation.mjs';
 
 export function createUserServiceValidation(user) {
   existsOrError(user.name, 'Nome invalido!', UserError);
