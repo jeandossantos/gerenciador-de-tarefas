@@ -38,7 +38,10 @@ export class AuthenticateUserService {
 
     return {
       ...payload,
-      token: jwt.sign({ id: user.id }, process.env.SECRET_OR_KEY),
+      token: jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.SECRET_OR_KEY
+      ),
     };
   }
 }
