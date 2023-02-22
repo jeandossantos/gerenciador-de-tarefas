@@ -36,6 +36,14 @@ describe('#Validation', () => {
         new Error('Invalid value')
       );
     });
+
+    test('should throw an error with a string containing only spaces', () => {
+      const value = ' ';
+
+      expect(() => existsOrError(value, 'Invalid value', Error)).toThrow(
+        new Error('Invalid value')
+      );
+    });
   });
 
   describe('#equalsOrError function', () => {
