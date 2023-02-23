@@ -3,6 +3,8 @@ import { CreateUserService } from '../service/user/createUserService.mjs';
 import { UserRepository } from '../repository/userRepository.mjs';
 import { AuthenticateUserService } from '../service/auth/authenticateUserService.mjs';
 import { AuthenticateUserController } from './auth/authenticateUserController.mjs';
+import { ValidateTokenService } from '../service/auth/validateTokenService.mjs';
+import { ValidateUserTokenController } from './auth/validateUserTokenController.mjs';
 
 const userRepository = new UserRepository();
 
@@ -21,4 +23,16 @@ const authenticateUserController = new AuthenticateUserController({
   authenticateUserService,
 });
 
-export { createUserController, authenticateUserController };
+const validateUserTokenService = new ValidateTokenService({
+  userRepository,
+});
+
+const validateUserTokenController = new ValidateUserTokenController({
+  validateTokenService: validateUserTokenService,
+});
+
+export {
+  createUserController,
+  authenticateUserController,
+  validateUserTokenController,
+};
