@@ -6,9 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/app.mjs",
-    "pretest": "npx knex seed:run",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --watch --runInBand --no-chace --config",
-    "test:cov": "NODE_OPTIONS=--experimental-vm-modules npx jest --config ./jest.config.mjs --coverage"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --watch --runInBand --no-chace --config",
+    "test:cov": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --config ./jest.config.mjs --coverage"
   },
   "keywords": [],
   "author": "jeandossantos",
