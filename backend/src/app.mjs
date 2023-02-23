@@ -32,7 +32,7 @@ app.use((error, req, res, next) => {
     });
   }
 
-  console.error(error.message);
+  console.error(error);
 
   return res
     .status(Util.STATUS_CODES.Internal_Server_Error)
