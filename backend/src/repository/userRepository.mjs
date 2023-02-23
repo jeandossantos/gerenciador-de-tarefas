@@ -43,4 +43,8 @@ export class UserRepository extends AbstractUserRepository {
       await trx('tasks').insert({ ...tarefaDefault, userId: id });
     });
   }
+
+  async findById(id) {
+    return await knex('users').where({ id }).first();
+  }
 }
