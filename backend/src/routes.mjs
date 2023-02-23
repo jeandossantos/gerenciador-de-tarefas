@@ -1,16 +1,20 @@
 import { Router } from 'express';
-import { createUserController } from './controller/index.mjs';
+import {
+  createUserController,
+  authenticateUserController,
+} from './controller/index.mjs';
 
 const routes = Router();
 
+routes.post('/signin', (req, res) => {
+  return authenticateUserController.handle(req, res);
+});
 routes.post('/signup', (req, res) => {
   return createUserController.handle(req, res);
 });
 
 export { routes };
 
-// app.post('/signin', authApi.signin);
-// app.post('/signup', userApi.save);
 // app.post('/validatetoken', authApi.validateToken);
 
 // app.route('/users/:id')
