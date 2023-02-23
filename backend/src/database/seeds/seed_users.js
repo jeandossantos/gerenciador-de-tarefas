@@ -4,7 +4,7 @@
  */
 import { Util } from '../../utils/util.mjs';
 
-export const users = [
+const users = [
   {
     id: 1,
     name: 'John Doe',
@@ -17,7 +17,7 @@ export const users = [
 export async function seed(knex) {
   // Deletes ALL existing entries
   await knex('users').del();
-  await knex('tasks').del();
+
   await knex('users').insert(users);
 
   await knex('tasks').insert([
