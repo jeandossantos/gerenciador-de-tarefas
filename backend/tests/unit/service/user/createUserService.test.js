@@ -84,7 +84,7 @@ describe('#CreateUserService', () => {
     expect(userRepositoryMock.create).not.toHaveBeenCalled();
   });
 
-  test('#CreateUserService should fail with if password and confirmedPassword does not match', async () => {
+  test('#CreateUserService should fail with if password and confirmedPassword do not match', async () => {
     const userRepositoryMock = {
       create: jest.fn(),
     };
