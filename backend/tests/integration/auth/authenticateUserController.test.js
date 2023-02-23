@@ -6,19 +6,19 @@ import { Util } from '../../../src/utils/util.mjs';
 
 import { connection as knex } from '../../../src/database/knex.mjs';
 
-beforeAll(async () => {
-  const user = UserObjectMother.valid();
-
-  Reflect.deleteProperty(user, 'confirmPassword');
-
-  await knex('users').del();
-  await knex('users').insert({
-    ...user,
-    password: Util.encryptPassword(user.password),
-  });
-});
-
 describe('Authentication user - integration', () => {
+  beforeAll(async () => {
+    const user = UserObjectMother.valid();
+
+    Reflect.deleteProperty(user, 'confirmPassword');
+
+    await knex('users').del();
+    await knex('users').insert({
+      ...user,
+      password: Util.encryptPassword(user.password),
+    });
+  });
+
   test('should not be able to authenticate with an invalid email', async () => {
     const user = UserObjectMother.withInvalidEmail();
 
