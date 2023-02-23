@@ -6,7 +6,6 @@ export class User {
     email,
     password,
     confirmPassword,
-    deletedAt = undefined,
   }) {
     this.id = id;
     this.name = name;
@@ -14,6 +13,5 @@ export class User {
     this.email = email;
     this.password = password;
     this.confirmPassword = confirmPassword;
-    this.deletedAt = deletedAt;
   }
 }
