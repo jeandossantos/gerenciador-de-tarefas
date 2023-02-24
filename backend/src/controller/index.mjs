@@ -11,7 +11,12 @@ import { UpdateUserPasswordController } from './user/updateUserPasswordControlle
 import { UpdateUserPasswordService } from '../service/user/updateUserPasswordService.mjs';
 import { UpdateUserService } from '../service/user/updateUserService.mjs';
 import { UpdateUserController } from '../controller/user/UpdateUserController.mjs';
+import { TaskRepository } from '../repository/taskRepository.mjs';
+import { CreateTaskService } from '../service/task/createTaskService.mjs';
+import { CreateTaskController } from './task/createTaskController.mjs';
+
 const userRepository = new UserRepository();
+const taskRepository = new TaskRepository();
 
 const createUserService = new CreateUserService({
   userRepository,
@@ -60,6 +65,14 @@ const updateUserController = new UpdateUserController({
   updateUserService,
 });
 
+const createTaskService = new CreateTaskService({
+  taskRepository,
+});
+
+const createTaskController = new CreateTaskController({
+  createTaskService,
+});
+
 export {
   createUserController,
   authenticateUserController,
@@ -67,4 +80,5 @@ export {
   removeUserController,
   updateUserPasswordController,
   updateUserController,
+  createTaskController,
 };
