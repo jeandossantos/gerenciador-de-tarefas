@@ -11,7 +11,7 @@ export function up(knex) {
       .references('users.id')
       .onDelete('CASCADE');
     table.text('name').notNullable();
-    table.text('description');
+    table.text('description').defaultTo('').notNullable();
     table.integer('priority', 1).notNullable();
     table.timestamp('deadline').notNullable();
     table.boolean('done').defaultTo(false);
