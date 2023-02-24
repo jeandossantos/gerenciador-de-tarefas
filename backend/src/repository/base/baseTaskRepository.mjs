@@ -18,10 +18,10 @@ export class BaseTaskRepository {
   }
 
   async getStats(userId) {
-    throw new NotImplementedError(this.findByUser.name);
+    throw new NotImplementedError(this.getStats.name);
   }
 
   async markAsDone(userId) {
-    throw new NotImplementedError(this.findByUser.name);
+    throw new NotImplementedError(this.markAsDone.name);
   }
 }
