@@ -23,7 +23,7 @@ export class TaskRepository extends BaseTaskRepository {
   //     throw new NotImplementedError(this.findByUser.name);
   //   }
 
-  //   async markAsDone(userId) {
-  //     throw new NotImplementedError(this.findByUser.name);
-  //   }
+  async markAsDone({ id: taskId }) {
+    await knex('tasks').update({ done: true }).where({ id: taskId });
+  }
 }
