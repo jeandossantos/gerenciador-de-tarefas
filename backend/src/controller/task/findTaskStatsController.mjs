@@ -6,8 +6,8 @@ export class FindTaskStatsController {
   async handle(req, res) {
     const { user_id } = req;
 
-    await this.findTaskStatsService.execute(user_id);
+    const stats = await this.findTaskStatsService.execute(user_id);
 
-    return res.status(200).send();
+    return res.status(200).json(stats);
   }
 }
