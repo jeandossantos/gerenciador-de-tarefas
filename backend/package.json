@@ -2,10 +2,10 @@
   "name": "@jeandossantos/backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.mjs",
+  "main": "src/server.mjs",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/app.mjs",
+    "dev": "node --watch src/server.mjs",
     "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --watch --runInBand --no-chace --config",
     "test:cov": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --config ./jest.config.mjs --coverage"
   },
