@@ -29,4 +29,8 @@ export class UserRepository extends BaseUserRepository {
   async remove(id) {
     return await knex('users').where({ id }).del();
   }
+
+  async updatePassword({ id, newPassword }) {
+    return await knex('users').update({ password: newPassword }).where({ id });
+  }
 }
