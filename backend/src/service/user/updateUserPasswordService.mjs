@@ -35,6 +35,8 @@ export class UpdateUserPasswordService {
 
     const user = await this.userRepository.findById(id);
 
+    if (!user) throw new UserError('Não encontrado!');
+
     const isMatch = bcrypt.compareSync(oldPassword, user.password);
 
     if (!isMatch) throw new UserError('Senha do usuário incorreta!');
