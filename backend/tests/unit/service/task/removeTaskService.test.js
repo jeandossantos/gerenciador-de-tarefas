@@ -31,7 +31,7 @@ describe('#CreateTaskService', () => {
     expect(taskRepositoryMock.remove).not.toHaveBeenCalled();
   });
 
-  test('should remove a task with invalid task ID', async () => {
+  test('should remove a task with valid task ID', async () => {
     const task = TaskObjectMother.valid();
 
     const taskRepositoryMock = {

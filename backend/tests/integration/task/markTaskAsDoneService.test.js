@@ -99,8 +99,6 @@ describe('#UpdateTaskController - Integration', () => {
   });
 
   test('should mark task as done with valid task id', async () => {
-    console.log(existingTask.id);
-
     const response = await request(app)
       .post('/tasks/finish/' + existingTask.id)
       .set('authorization', `bearer ${validToken}`);
