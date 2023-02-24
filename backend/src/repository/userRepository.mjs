@@ -33,4 +33,8 @@ export class UserRepository extends BaseUserRepository {
   async updatePassword({ id, newPassword }) {
     return await knex('users').update({ password: newPassword }).where({ id });
   }
+
+  async update(user) {
+    return await knex('users').update(user).where({ id: user.id });
+  }
 }
