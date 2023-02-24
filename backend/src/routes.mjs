@@ -9,6 +9,7 @@ import {
   createTaskController,
   markAsDoneController,
   removeTaskController,
+  findTaskStatsController,
 } from './controller/index.mjs';
 
 import { ensureAuthenticated } from './middleware/ensureAuthenticated.mjs';
@@ -60,7 +61,7 @@ routes.post('/tasks/finish/:id', ensureAuthenticated, (req, res) => {
 });
 
 routes.get('/stats', ensureAuthenticated, (req, res) => {
-  res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
+  return findTaskStatsController.handle(req, res);
 });
 
 export { routes };
