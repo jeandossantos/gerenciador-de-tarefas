@@ -69,6 +69,28 @@ describe('#RemoveUserService', () => {
     expect(userRepositoryMock.findById).toHaveBeenCalled();
   });
 
+  test('#RemoveUserService should not be able to remove a user if user is not found', async () => {
+    const userRepositoryMock = {
+      remove: jest.fn(),
+      findById: jest.fn().mockReturnValue(undefined),
+    };
+
+    const user = UserObjectMother.valid();
+
+    const removeUserService = new RemoveUserService({
+      userRepository: userRepositoryMock,
+    });
+
+    const expectedError = new UserError('Não encontrado!');
+
+    const result = removeUserService.execute(user);
+
+    await expect(result).rejects.toThrowError(expectedError);
+
+    expect(userRepositoryMock.findById).toHaveBeenCalled();
+    expect(userRepositoryMock.remove).not.toHaveBeenCalled();
+  });
+
   test('#RemoveUserService should remove a user', async () => {
     const userRepositoryMock = {
       remove: jest.fn(),
