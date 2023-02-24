@@ -20,4 +20,8 @@ export class BaseUserRepository {
   async updatePassword({ newPassword, id }) {
     throw new NotImplementedError(this.updatePassword.name);
   }
+
+  async update({ newPassword, id }) {
+    throw new NotImplementedError(this.update.name);
+  }
 }
