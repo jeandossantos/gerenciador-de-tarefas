@@ -8,6 +8,7 @@ import {
   updateUserController,
   createTaskController,
   markAsDoneController,
+  removeTaskController,
 } from './controller/index.mjs';
 
 import { ensureAuthenticated } from './middleware/ensureAuthenticated.mjs';
@@ -51,7 +52,7 @@ routes.put('/tasks/:id', ensureAuthenticated, (req, res) => {
   res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
 });
 routes.delete('/tasks/:id', ensureAuthenticated, (req, res) => {
-  res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
+  return removeTaskController.handle(req, res);
 });
 
 routes.post('/tasks/finish/:id', ensureAuthenticated, (req, res) => {
