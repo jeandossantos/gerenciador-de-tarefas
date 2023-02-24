@@ -9,7 +9,8 @@ import { RemoveUserController } from './user/removeUserController.mjs';
 import { RemoveUserService } from '../service/user/removeUserService.mjs';
 import { UpdateUserPasswordController } from './user/updateUserPasswordController.mjs';
 import { UpdateUserPasswordService } from '../service/user/updateUserPasswordService.mjs';
-
+import { UpdateUserService } from '../service/user/updateUserService.mjs';
+import { UpdateUserController } from '../controller/user/UpdateUserController.mjs';
 const userRepository = new UserRepository();
 
 const createUserService = new CreateUserService({
@@ -51,10 +52,19 @@ const updateUserPasswordController = new UpdateUserPasswordController({
   updateUserPasswordService,
 });
 
+const updateUserService = new UpdateUserService({
+  userRepository,
+});
+
+const updateUserController = new UpdateUserController({
+  updateUserService,
+});
+
 export {
   createUserController,
   authenticateUserController,
   validateUserTokenController,
   removeUserController,
   updateUserPasswordController,
+  updateUserController,
 };
