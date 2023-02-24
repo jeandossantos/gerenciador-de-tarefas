@@ -14,7 +14,8 @@ import { UpdateUserController } from '../controller/user/UpdateUserController.mj
 import { TaskRepository } from '../repository/taskRepository.mjs';
 import { CreateTaskService } from '../service/task/createTaskService.mjs';
 import { CreateTaskController } from './task/createTaskController.mjs';
-
+import { MarkAsDoneController } from './task/markTaskAsDoneController.mjs';
+import { MarkTaskAsDoneService } from '../service/task/markTaskAsDoneService.mjs';
 const userRepository = new UserRepository();
 const taskRepository = new TaskRepository();
 
@@ -73,6 +74,13 @@ const createTaskController = new CreateTaskController({
   createTaskService,
 });
 
+const markTaskAsDoneService = new MarkTaskAsDoneService({
+  taskRepository,
+});
+const markAsDoneController = new MarkAsDoneController({
+  markAsDoneService: markTaskAsDoneService,
+});
+
 export {
   createUserController,
   authenticateUserController,
@@ -81,4 +89,5 @@ export {
   updateUserPasswordController,
   updateUserController,
   createTaskController,
+  markAsDoneController,
 };
