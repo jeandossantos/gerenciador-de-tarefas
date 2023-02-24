@@ -22,6 +22,10 @@ export class RemoveUserService {
 
     const user = await this.userRepository.findById(id);
 
+    if (!user) {
+      throw new UserError('Não encontrado!');
+    }
+
     const isMatch = bcrypt.compareSync(password, user.password);
 
     if (!isMatch) {
