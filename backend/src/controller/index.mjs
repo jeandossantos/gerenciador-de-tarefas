@@ -18,6 +18,8 @@ import { MarkAsDoneController } from './task/markTaskAsDoneController.mjs';
 import { MarkTaskAsDoneService } from '../service/task/markTaskAsDoneService.mjs';
 import { RemoveTaskService } from '../service/task/removeTaskService.mjs';
 import { RemoveTaskController } from '../controller/task/removeTaskController.mjs';
+import { FindTaskStatsService } from '../service/task/findTaskStatsService.mjs';
+import { FindTaskStatsController } from './task/findTaskStatsController.mjs';
 
 const userRepository = new UserRepository();
 const taskRepository = new TaskRepository();
@@ -87,8 +89,16 @@ const markAsDoneController = new MarkAsDoneController({
 const removeTaskService = new RemoveTaskService({
   taskRepository,
 });
+
 const removeTaskController = new RemoveTaskController({
   removeTaskService,
+});
+
+const findTaskStatsService = new FindTaskStatsService({
+  taskRepository,
+});
+const findTaskStatsController = new FindTaskStatsController({
+  findTaskStatsService,
 });
 
 export {
@@ -101,4 +111,5 @@ export {
   createTaskController,
   markAsDoneController,
   removeTaskController,
+  findTaskStatsController,
 };
