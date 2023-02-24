@@ -23,17 +23,13 @@ describe('Authentication user - integration', () => {
     await createUser(user);
   });
 
-  afterAll(async () => {
-    await knex('users').del();
-  });
-
   test('should not be able to authenticate with an invalid email', async () => {
     const user = UserObjectMother.withInvalidEmail();
 
     const response = await request(app).post('/signin').send(user);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Informe E-mail e senha!');
+    expect(response.text).toBe('Informe E-mail e senha!');
   });
 
   test('should not be able to authenticate with an invalid password', async () => {
@@ -42,7 +38,7 @@ describe('Authentication user - integration', () => {
     const response = await request(app).post('/signin').send(user);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Usuário/Senha inválidos!');
+    expect(response.text).toBe('Usuário/Senha inválidos!');
   });
 
   test('should not be able to authenticate if user does not exists', async () => {
@@ -56,7 +52,7 @@ describe('Authentication user - integration', () => {
     const response = await request(app).post('/signin').send(nonexistentUser);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Usuário não encontrado!');
+    expect(response.text).toBe('Usuário não encontrado!');
   });
 
   test('should be able to authenticate with valid credentials', async () => {

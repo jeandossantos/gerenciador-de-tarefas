@@ -43,10 +43,6 @@ describe('#UpdateUserPasswordController - Integration', () => {
     validToken = tokenGenerator({ id: userId, email: existingUser.email });
   });
 
-  afterAll(async () => {
-    await knex('users').del();
-  });
-
   const INVALID_PASSWORD = '';
   const INVALID_CURRENT_PASSWORD = 'invalid-current-password';
   const INVALID_CONFIRM_NEW_PASSWORD = '987654321';
@@ -82,7 +78,8 @@ describe('#UpdateUserPasswordController - Integration', () => {
       .set('authorization', 'bearer ' + validToken);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Senha do usuário incorreta!');
+
+    expect(response.text).toBe('Senha do usuário incorreta!');
   });
 
   test('should not update the password of the user with invalid new password', async () => {
@@ -98,7 +95,7 @@ describe('#UpdateUserPasswordController - Integration', () => {
       .set('authorization', 'bearer ' + validToken);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Nova senha invalida!');
+    expect(response.text).toBe('Nova senha invalida!');
   });
 
   test('should not update the password of the user if the new password and confirm new password does not match', async () => {
@@ -118,7 +115,7 @@ describe('#UpdateUserPasswordController - Integration', () => {
       .set('authorization', 'bearer ' + validToken);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Senhas não coincidem!');
+    expect(response.text).toBe('Senhas não coincidem!');
   });
 
   test('should not update the password of the user if the od password and current password does not match', async () => {
@@ -135,7 +132,7 @@ describe('#UpdateUserPasswordController - Integration', () => {
       .set('authorization', 'bearer ' + validToken);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toBe('Senha do usuário incorreta!');
+    expect(response.text).toBe('Senha do usuário incorreta!');
   });
 
   test('should be able to update the password of the user', async () => {

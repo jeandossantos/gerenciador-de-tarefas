@@ -49,10 +49,6 @@ describe('#RemoveUserController - Integration', () => {
     );
   });
 
-  afterAll(async () => {
-    await knex('users').del();
-  });
-
   test('should not remove a user without authorization token', async () => {
     const user = UserObjectMother.withInvalidId();
 
@@ -73,7 +69,7 @@ describe('#RemoveUserController - Integration', () => {
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
 
-    expect(response.body.error).toBe('Usuário não encontrado!');
+    expect(response.text).toBe('Usuário não encontrado!');
   });
 
   test('#RemoveUserService should fail with invalid password', async () => {
@@ -86,12 +82,12 @@ describe('#RemoveUserController - Integration', () => {
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
 
-    expect(response.body.error).toBe('Senha do usuário incorreta!');
+    expect(response.text).toBe('Senha do usuário incorreta!');
   });
 
   test('#RemoveUserService should fail if user password does not Match', async () => {
     const invalidPassword = UserObjectMother.withInvalidPassword();
-
+    console.log('user', existingUser.id);
     const response = await request(app)
       .delete(`/users/${existingUser.id}`)
       .set('authorization', 'bearer ' + validToken)
@@ -99,7 +95,7 @@ describe('#RemoveUserController - Integration', () => {
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
 
-    expect(response.body.error).toBe('Senha do usuário incorreta!');
+    expect(response.text).toBe('Senha do usuário incorreta!');
   });
 
   test('#RemoveUserService should remove a user', async () => {
