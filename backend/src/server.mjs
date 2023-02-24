@@ -1,4 +1,4 @@
-import { app } from './index.mjs';
+import { app } from './app.mjs';
 
 const PORT = 3001;
 
