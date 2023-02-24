@@ -7,6 +7,8 @@ import { ValidateTokenService } from '../service/auth/validateTokenService.mjs';
 import { ValidateUserTokenController } from './auth/validateUserTokenController.mjs';
 import { RemoveUserController } from './user/removeUserController.mjs';
 import { RemoveUserService } from '../service/user/removeUserService.mjs';
+import { UpdateUserPasswordController } from './user/updateUserPasswordController.mjs';
+import { UpdateUserPasswordService } from '../service/user/updateUserPasswordService.mjs';
 
 const userRepository = new UserRepository();
 
@@ -41,9 +43,18 @@ const removeUserController = new RemoveUserController({
   removeUserService,
 });
 
+const updateUserPasswordService = new UpdateUserPasswordService({
+  userRepository,
+});
+
+const updateUserPasswordController = new UpdateUserPasswordController({
+  updateUserPasswordService,
+});
+
 export {
   createUserController,
   authenticateUserController,
   validateUserTokenController,
   removeUserController,
+  updateUserPasswordController,
 };
