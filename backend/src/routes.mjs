@@ -5,6 +5,7 @@ import {
   validateUserTokenController,
   removeUserController,
   updateUserPasswordController,
+  updateUserController,
 } from './controller/index.mjs';
 
 import { ensureAuthenticated } from './middleware/ensureAuthenticated.mjs';
@@ -26,7 +27,7 @@ routes.delete('/users/:id', ensureAuthenticated, (req, res) => {
 });
 
 routes.put('/users/:id', ensureAuthenticated, (req, res) => {
-  res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
+  return updateUserController.handle(req, res);
 });
 routes.put('/users/update/:id', ensureAuthenticated, (req, res) => {
   return updateUserPasswordController.handle(req, res);
