@@ -44,8 +44,8 @@ describe('#CreateUser - Integration', () => {
 
     const response = await request(app).post('/signup').send(user);
 
-    expect(response.body.error).toStrictEqual('Nome invalido!');
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
+    expect(response.text).toStrictEqual('Nome invalido!');
   });
 
   test('should not create a user with an invalid email', async () => {
@@ -54,7 +54,7 @@ describe('#CreateUser - Integration', () => {
     const response = await request(app).post('/signup').send(user);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toStrictEqual('E-mail invalido!');
+    expect(response.text).toStrictEqual('E-mail invalido!');
   });
 
   test('should not create a user with an invalid initials', async () => {
@@ -68,7 +68,7 @@ describe('#CreateUser - Integration', () => {
       });
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toStrictEqual('Iniciais invalidas!');
+    expect(response.text).toStrictEqual('Iniciais invalidas!');
   });
 
   test('should not create a user with an invalid password', async () => {
@@ -82,7 +82,7 @@ describe('#CreateUser - Integration', () => {
       });
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toStrictEqual('Senha invalida!');
+    expect(response.text).toStrictEqual('Senha invalida!');
   });
 
   test('should not create a user if the passwords do not match ', async () => {
@@ -96,7 +96,7 @@ describe('#CreateUser - Integration', () => {
       });
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toStrictEqual('Senhas não coincidem!');
+    expect(response.text).toStrictEqual('Senhas não coincidem!');
   });
 
   test('should not create a user if user already exists', async () => {
@@ -110,7 +110,7 @@ describe('#CreateUser - Integration', () => {
       });
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.body.error).toStrictEqual('Usuário já existe!');
+    expect(response.text).toStrictEqual('Usuário já existe!');
   });
 
   test('should create a user successfully', async () => {
