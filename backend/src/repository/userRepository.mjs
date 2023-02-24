@@ -25,4 +25,8 @@ export class UserRepository extends BaseUserRepository {
   async findById(id) {
     return await knex('users').where({ id }).first();
   }
+
+  async remove(id) {
+    return await knex('users').where({ id }).del();
+  }
 }
