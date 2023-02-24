@@ -27,9 +27,8 @@ app.use((error, req, res, next) => {
   }
 
   if (error instanceof BaseError) {
-    return res.status(Util.STATUS_CODES.Bad_Request).json({
-      error: error.message,
-    });
+    console.log(error.message);
+    return res.status(Util.STATUS_CODES.Bad_Request).send(error.message);
   }
 
   console.error(error);
