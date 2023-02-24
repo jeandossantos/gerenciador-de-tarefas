@@ -1,4 +1,4 @@
-import { test, describe, expect, beforeAll } from '@jest/globals';
+import { test, describe, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
@@ -6,17 +6,25 @@ import { Util } from '../../../src/utils/util.mjs';
 
 import { connection as knex } from '../../../src/database/knex.mjs';
 
+async function createUser({ name, email, initials, password }) {
+  return await knex('users').insert({
+    name,
+    email,
+    initials,
+    password: Util.encryptPassword(password),
+  });
+}
+
 describe('Authentication user - integration', () => {
   beforeAll(async () => {
     const user = UserObjectMother.valid();
 
-    Reflect.deleteProperty(user, 'confirmPassword');
-
     await knex('users').del();
-    await knex('users').insert({
-      ...user,
-      password: Util.encryptPassword(user.password),
-    });
+    await createUser(user);
+  });
+
+  afterAll(async () => {
+    await knex('users').del();
   });
 
   test('should not be able to authenticate with an invalid email', async () => {

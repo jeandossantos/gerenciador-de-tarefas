@@ -1,4 +1,4 @@
-import { test, describe, expect, beforeAll } from '@jest/globals';
+import { test, describe, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 
 import { app } from '../../../src/app.mjs';
@@ -30,7 +30,13 @@ describe('#CreateUser - Integration', () => {
       confirmPassword,
     };
 
-    existingUser.id = await createUser(existingUser)[0];
+    const [userId] = await createUser(existingUser);
+
+    existingUser.id = userId;
+  });
+
+  afterAll(async () => {
+    await knex('users').del();
   });
 
   test('should not create a user with an invalid name', async () => {
