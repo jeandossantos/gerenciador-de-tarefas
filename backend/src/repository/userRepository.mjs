@@ -16,7 +16,7 @@ export class UserRepository extends BaseUserRepository {
     };
 
     await knex.transaction(async (trx) => {
-      const id = await trx('users').insert(user, 'id');
+      const [id] = await trx('users').insert(user, 'id');
 
       await trx('tasks').insert({ ...tarefaDefault, userId: id });
     });
