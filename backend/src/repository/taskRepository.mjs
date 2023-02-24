@@ -7,9 +7,9 @@ export class TaskRepository extends BaseTaskRepository {
     return await knex('tasks').insert(task);
   }
 
-  //   async remove(user) {
-  //     throw new NotImplementedError(this.remove.name);
-  //   }
+  async remove(id) {
+    return await knex('tasks').where({ id }).del();
+  }
 
   //   async find({ search, page, limit, userId }) {
   //     throw new NotImplementedError(this.find.name);
