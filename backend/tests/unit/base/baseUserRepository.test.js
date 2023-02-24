@@ -67,4 +67,16 @@ describe('Not implemented Error class', () => {
       expectedError
     );
   });
+
+  test('should throw an error method update is not implemented', async () => {
+    class ConcreteClass extends BaseUserRepository {}
+
+    const concreteClass = new ConcreteClass();
+
+    const expectedError = new NotImplementedError(concreteClass.update.name);
+
+    await expect(() => concreteClass.update({})).rejects.toThrowError(
+      expectedError
+    );
+  });
 });
