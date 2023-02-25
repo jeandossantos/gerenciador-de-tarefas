@@ -20,10 +20,12 @@ import { RemoveTaskService } from '../service/task/removeTaskService.mjs';
 import { RemoveTaskController } from '../controller/task/removeTaskController.mjs';
 import { FindTaskStatsService } from '../service/task/findTaskStatsService.mjs';
 import { FindTaskStatsController } from './task/findTaskStatsController.mjs';
-
 import { FindTasksController } from '../controller/task/findTasksController.mjs';
 import { FindTasksService } from '../service/task/findTasksService.mjs';
-
+import { UpdateTaskController } from '../controller/task/updateTaskController.mjs';
+import { UpdateTaskService } from '../service/task/updateTaskService.mjs';
+import { FindDailyTasksController } from '../controller/task/findDailyTasksController.mjs';
+import { FindDailyTasksService } from '../service/task/findDailyTasksService.mjs';
 const userRepository = new UserRepository();
 const taskRepository = new TaskRepository();
 
@@ -82,6 +84,14 @@ const createTaskController = new CreateTaskController({
   createTaskService,
 });
 
+const updateTaskService = new UpdateTaskService({
+  taskRepository,
+});
+
+const updateTaskController = new UpdateTaskController({
+  updateTaskService,
+});
+
 const markTaskAsDoneService = new MarkTaskAsDoneService({
   taskRepository,
 });
@@ -111,6 +121,13 @@ const findTasksController = new FindTasksController({
   findTasksService,
 });
 
+const findDailyTasksService = new FindDailyTasksService({
+  taskRepository,
+});
+const findDailyTasksController = new FindDailyTasksController({
+  findDailyTasksService,
+});
+
 export {
   createUserController,
   authenticateUserController,
@@ -123,4 +140,6 @@ export {
   removeTaskController,
   findTaskStatsController,
   findTasksController,
+  updateTaskController,
+  findDailyTasksController,
 };
