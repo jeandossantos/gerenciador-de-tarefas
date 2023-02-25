@@ -66,6 +66,33 @@ describe('#UpdateUserPasswordService', () => {
     expect(userRepositoryMock.updatePassword).not.toHaveBeenCalled();
   });
 
+  test('should not update a user with invalid id', async () => {
+    const userRepositoryMock = {
+      findById: jest.fn().mockReturnValue(undefined),
+    };
+
+    const { id, password } = UserObjectMother.withInvalidId();
+
+    const passwordsMock = {
+      id,
+      oldPassword: password,
+      newPassword: password,
+      confirmNewPassword: password,
+    };
+
+    const updateUserPasswordService = new UpdateUserPasswordService({
+      userRepository: userRepositoryMock,
+    });
+
+    const expectedError = new UserError('Não encontrado!');
+
+    await expect(
+      updateUserPasswordService.execute(passwordsMock)
+    ).rejects.toThrowError(expectedError);
+
+    expect(userRepositoryMock.findById).toHaveBeenCalled();
+  });
+
   test('#UpdateUserPasswordService should not update the password of the user if the new password and confirm new password does not match', async () => {
     const userRepositoryMock = {
       updatePassword: jest.fn(),

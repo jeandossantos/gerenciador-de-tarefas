@@ -85,7 +85,7 @@ export class TaskRepository extends BaseTaskRepository {
     return {
       finishedTasksCount: finishedTasksCount.count,
       totaltasksCount: totalTasksCount.count,
-      expiredTasksCount: Number(expiredTasksCount.length) || 0,
+      expiredTasksCount: Number(expiredTasksCount.length),
     };
   }
 
