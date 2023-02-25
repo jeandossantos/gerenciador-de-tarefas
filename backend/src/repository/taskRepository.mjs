@@ -11,6 +11,39 @@ export class TaskRepository extends BaseTaskRepository {
     return await knex('tasks').where({ id }).del();
   }
 
+  async update(task) {
+    await knex('tasks').update(task).where({ id: task.id });
+  }
+
+  async getDailyTasks({ search, page, limit, userId }) {
+    const [day, month, year] = new Date().toLocaleDateString().split('/');
+
+    const currentDate = `${year}-${month}-${day}`;
+
+    const count = await knex('tasks')
+      .where({ userId })
+      .whereBetween('deadline', [
+        `${currentDate} 00:00:00`,
+        `${currentDate} 23:59:59`,
+      ])
+      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
+      .count('id', { as: 'value' })
+      .first();
+
+    const tasks = await knex('tasks')
+      .where({ userId })
+      .whereBetween('deadline', [
+        `${currentDate} 00:00:00`,
+        `${currentDate} 23:59:59`,
+      ])
+      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
+      .limit(4)
+      .offset(page * limit - limit)
+      .orderBy('deadline', 'DESC');
+
+    return { tasks, count: count.value };
+  }
+
   async findByUser({ search, page, limit, userId }) {
     const count = await knex('tasks')
       .where({ userId })
