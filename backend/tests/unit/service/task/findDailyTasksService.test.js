@@ -160,7 +160,6 @@ describe('#FindDailyTasksService', () => {
     const expectedDate = `${currentDate.getDate()}-${currentDate.getMonth()}`;
 
     deadlines.forEach((deadline) => {
-      console.log(deadline, expectedDate);
       expect(deadline).toBe(expectedDate);
     });
 
