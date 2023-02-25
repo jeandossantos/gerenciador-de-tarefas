@@ -7,18 +7,19 @@ export class UserRepository extends BaseUserRepository {
   }
 
   async create(user) {
-    const tarefaDefault = {
-      name: 'Primeiro Login',
-      description: 'Está é uma tarefa criada por padrão pelo sistema.',
-      priority: 0,
-      deadline: new Date(),
-      done: false,
-    };
-
     await knex.transaction(async (trx) => {
-      const [id] = await trx('users').insert(user, 'id');
+      const [createdUser] = await trx('users').insert(user, 'id');
 
-      await trx('tasks').insert({ ...tarefaDefault, userId: id });
+      const tarefaDefault = {
+        name: 'Primeiro Login',
+        description: 'Está é uma tarefa criada por padrão pelo sistema.',
+        priority: 0,
+        deadline: new Date(),
+        done: false,
+        userId: createdUser.id,
+      };
+
+      await trx('tasks').insert(tarefaDefault);
     });
   }
 
