@@ -11,13 +11,22 @@ export class TaskRepository extends BaseTaskRepository {
     return await knex('tasks').where({ id }).del();
   }
 
-  //   async find({ search, page, limit, userId }) {
-  //     throw new NotImplementedError(this.find.name);
-  //   }
+  async findByUser({ search, page, limit, userId }) {
+    const count = await knex('tasks')
+      .where({ userId })
+      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
+      .count('id', { as: 'value' })
+      .first();
 
-  //   async findByUser({ search, page, limit, userId }) {
-  //     throw new NotImplementedError(this.findByUser.name);
-  //   }
+    const tasks = await knex('tasks')
+      .where({ userId })
+      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
+      .limit(limit)
+      .offset(page * limit - limit)
+      .orderBy('deadline', 'DESC');
+
+    return { tasks, count: count.value };
+  }
 
   async getStats(userId) {
     const date = new Date().getTime();
