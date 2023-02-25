@@ -21,6 +21,9 @@ import { RemoveTaskController } from '../controller/task/removeTaskController.mj
 import { FindTaskStatsService } from '../service/task/findTaskStatsService.mjs';
 import { FindTaskStatsController } from './task/findTaskStatsController.mjs';
 
+import { FindTasksController } from '../controller/task/findTasksController.mjs';
+import { FindTasksService } from '../service/task/findTasksService.mjs';
+
 const userRepository = new UserRepository();
 const taskRepository = new TaskRepository();
 
@@ -101,6 +104,13 @@ const findTaskStatsController = new FindTaskStatsController({
   findTaskStatsService,
 });
 
+const findTasksService = new FindTasksService({
+  taskRepository,
+});
+const findTasksController = new FindTasksController({
+  findTasksService,
+});
+
 export {
   createUserController,
   authenticateUserController,
@@ -112,4 +122,5 @@ export {
   markAsDoneController,
   removeTaskController,
   findTaskStatsController,
+  findTasksController,
 };
