@@ -5,12 +5,12 @@ export class BaseTaskRepository {
     throw new NotImplementedError(this.create.name);
   }
 
-  async remove(user) {
-    throw new NotImplementedError(this.remove.name);
+  async update(user) {
+    throw new NotImplementedError(this.update.name);
   }
 
-  async find({ search, page, limit, userId }) {
-    throw new NotImplementedError(this.find.name);
+  async remove(user) {
+    throw new NotImplementedError(this.remove.name);
   }
 
   async findByUser({ search, page, limit, userId }) {
