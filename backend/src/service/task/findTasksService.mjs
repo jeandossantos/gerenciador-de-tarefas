@@ -16,11 +16,7 @@ export class FindTasksService {
   async execute({ userId, search, page, limit }) {
     findTasksServiceValidation({ userId, page, limit });
 
-    const {
-      tasks,
-      limit: limitByPage,
-      count,
-    } = await this.taskRepository.findByUser({
+    const { tasks, count } = await this.taskRepository.findByUser({
       search,
       page,
       limit,
@@ -29,7 +25,7 @@ export class FindTasksService {
 
     const data = tasks.sort(this.sortTasks);
 
-    return { data, limit: limitByPage, count };
+    return { data, limit, count };
   }
 
   sortTasks(a, b) {
