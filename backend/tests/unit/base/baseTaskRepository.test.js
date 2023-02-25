@@ -79,4 +79,18 @@ describe('Not implemented Error class - BaseTaskRepository', () => {
       expectedError
     );
   });
+
+  test('should throw an error method getDailyTasks is not implemented', async () => {
+    class ConcreteClass extends BaseTaskRepository {}
+
+    const concreteClass = new ConcreteClass();
+
+    const expectedError = new NotImplementedError(
+      concreteClass.getDailyTasks.name
+    );
+
+    await expect(() => concreteClass.getDailyTasks({})).rejects.toThrowError(
+      expectedError
+    );
+  });
 });
