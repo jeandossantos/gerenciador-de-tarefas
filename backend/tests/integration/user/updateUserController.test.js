@@ -34,13 +34,17 @@ describe('#UpdateUserPasswordController - Integration', () => {
   let validToken = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
 
     const [userId] = await createUser(existingUser);
 
     existingUser.id = userId;
 
     validToken = tokenGenerator({ id: userId, email: existingUser.email });
+  });
+
+  afterAll(async () => {
+    return await knex('users').where({ id: existingUser.id }).del();
   });
 
   test('should not update a user without authentication credentials', async () => {

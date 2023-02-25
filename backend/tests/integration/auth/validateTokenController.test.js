@@ -23,7 +23,8 @@ describe('#Validate Token - Integration', () => {
   let existingUser = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
+
     const { password, initials, confirmPassword } = UserObjectMother.valid();
 
     existingUser = {
@@ -37,6 +38,10 @@ describe('#Validate Token - Integration', () => {
     const [userId] = await createUser(existingUser);
 
     existingUser.id = userId;
+  });
+
+  afterAll(async () => {
+    return await knex('users').where({ id: existingUser.id }).del();
   });
 
   test('should returns false with invalid token', async () => {

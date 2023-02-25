@@ -17,10 +17,15 @@ async function createUser({ name, email, initials, password }) {
 
 describe('Authentication user - integration', () => {
   beforeAll(async () => {
+    await knex('users').where('id', '>', 1).del();
+
     const user = UserObjectMother.valid();
 
-    await knex('users').del();
     await createUser(user);
+  });
+
+  afterAll(async () => {
+    return await knex('users').where('id', '>', 1).del();
   });
 
   test('should not be able to authenticate with an invalid email', async () => {

@@ -1,4 +1,11 @@
-import { jest, test, describe, expect, beforeEach } from '@jest/globals';
+import {
+  jest,
+  test,
+  describe,
+  expect,
+  beforeEach,
+  afterAll,
+} from '@jest/globals';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 
@@ -27,7 +34,7 @@ describe('#RemoveUserController - Integration', () => {
   let validToken = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
 
     const { password, initials, confirmPassword } = UserObjectMother.valid();
 
@@ -47,6 +54,10 @@ describe('#RemoveUserController - Integration', () => {
       { id: existingUser.id, email: existingUser.email },
       process.env.SECRET_OR_KEY
     );
+  });
+
+  afterAll(async () => {
+    return await knex('users').where({ id: existingUser.id }).del();
   });
 
   test('should not remove a user without authorization token', async () => {
@@ -87,7 +98,6 @@ describe('#RemoveUserController - Integration', () => {
 
   test('#RemoveUserService should fail if user password does not Match', async () => {
     const invalidPassword = UserObjectMother.withInvalidPassword();
-    console.log('user', existingUser.id);
     const response = await request(app)
       .delete(`/users/${existingUser.id}`)
       .set('authorization', 'bearer ' + validToken)

@@ -1,4 +1,4 @@
-import { expect, describe, test, beforeAll } from '@jest/globals';
+import { expect, describe, test, beforeAll, afterAll } from '@jest/globals';
 
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
@@ -36,13 +36,19 @@ describe('#CreateTaskController - Integration', () => {
   let validToken = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
 
     const [userId] = await createUser(existingUser);
 
     existingUser.id = userId;
 
     validToken = tokenGenerator({ id: userId, email: existingUser.email });
+  });
+
+  afterAll(async () => {
+    await knex('users').where({ id: existingUser.id }).del();
+
+    return await knex('tasks').where('id', '>', 1).del();
   });
 
   test('should not create a task without authorization token', async () => {

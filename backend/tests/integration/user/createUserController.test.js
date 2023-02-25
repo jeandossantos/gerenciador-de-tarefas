@@ -19,7 +19,8 @@ describe('#CreateUser - Integration', () => {
   let existingUser = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
+
     const { password, initials, confirmPassword } = UserObjectMother.valid();
 
     existingUser = {
@@ -36,7 +37,7 @@ describe('#CreateUser - Integration', () => {
   });
 
   afterAll(async () => {
-    await knex('users').del();
+    return await knex('users').where({ id: existingUser.id }).del();
   });
 
   test('should not create a user with an invalid name', async () => {

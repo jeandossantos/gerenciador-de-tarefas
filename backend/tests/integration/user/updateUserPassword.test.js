@@ -1,4 +1,4 @@
-import { jest, test, describe, expect, beforeEach } from '@jest/globals';
+import { jest, test, describe, expect, afterAll } from '@jest/globals';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 
@@ -34,13 +34,17 @@ describe('#UpdateUserPasswordController - Integration', () => {
   let validToken = null;
 
   beforeAll(async () => {
-    await knex('users').del();
+    await knex('users').where('id', '>', 1).del();
 
     const [userId] = await createUser(existingUser);
 
     existingUser.id = userId;
 
     validToken = tokenGenerator({ id: userId, email: existingUser.email });
+  });
+
+  afterAll(async () => {
+    return await knex('users').where({ id: existingUser.id }).del();
   });
 
   const INVALID_PASSWORD = '';
@@ -124,7 +128,6 @@ describe('#UpdateUserPasswordController - Integration', () => {
       newPassword: VALID_NEW_PASSWORD,
       confirmNewPassword: VALID_NEW_PASSWORD,
     };
-    console.log('[id]', existingUser.id);
 
     const response = await request(app)
       .put('/users/update/' + existingUser.id)
