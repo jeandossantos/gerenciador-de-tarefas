@@ -21,6 +21,10 @@ export class BaseTaskRepository {
     throw new NotImplementedError(this.getStats.name);
   }
 
+  async getDailyTasks({ search, page, limit, userId }) {
+    throw new NotImplementedError(this.getDailyTasks.name);
+  }
+
   async markAsDone(userId) {
     throw new NotImplementedError(this.markAsDone.name);
   }
