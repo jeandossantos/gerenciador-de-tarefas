@@ -11,6 +11,8 @@ import {
   removeTaskController,
   findTaskStatsController,
   findTasksController,
+  updateTaskController,
+  findDailyTasksController,
 } from './controller/index.mjs';
 
 import { ensureAuthenticated } from './middleware/ensureAuthenticated.mjs';
@@ -47,12 +49,13 @@ routes.get('/tasks', ensureAuthenticated, (req, res) => {
 });
 
 routes.get('/tasks/daily', ensureAuthenticated, (req, res) => {
-  res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
+  return findDailyTasksController.handle(req, res);
 });
 
 routes.put('/tasks/:id', ensureAuthenticated, (req, res) => {
-  res.status(Util.STATUS_CODES.Not_Implemented).send('Not_implemented');
+  return updateTaskController.handle(req, res);
 });
+
 routes.delete('/tasks/:id', ensureAuthenticated, (req, res) => {
   return removeTaskController.handle(req, res);
 });
