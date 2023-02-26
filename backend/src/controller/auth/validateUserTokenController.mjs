@@ -1,5 +1,3 @@
-import { Util } from '../../utils/util.mjs';
-
 export class ValidateUserTokenController {
   constructor({ validateTokenService }) {
     this.validateTokenService = validateTokenService;
@@ -10,10 +8,6 @@ export class ValidateUserTokenController {
 
     const isAuthorized = await this.validateTokenService.execute(token);
 
-    const statusCode = isAuthorized
-      ? Util.STATUS_CODES.OK
-      : Util.STATUS_CODES.Unauthorized;
-
-    return res.status(statusCode).send(isAuthorized);
+    return res.send(isAuthorized);
   }
 }
