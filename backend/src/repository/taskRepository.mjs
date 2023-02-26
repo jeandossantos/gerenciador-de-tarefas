@@ -1,95 +1,144 @@
-import { connection as knex } from '../database/knex.mjs';
-
+import { prisma } from '../database/prisma.mjs';
 import { BaseTaskRepository } from './base/baseTaskRepository.mjs';
 
 export class TaskRepository extends BaseTaskRepository {
+  constructor() {
+    super();
+
+    this.connection = prisma.tasks;
+  }
   async create(task) {
-    return await knex('tasks').insert(task);
+    return await this.connection.create({
+      data: task,
+    });
   }
 
   async remove(id) {
-    return await knex('tasks').where({ id }).del();
+    return await this.connection.delete({
+      where: {
+        id: Number(id),
+      },
+    });
   }
 
-  async update(task) {
-    await knex('tasks').update(task).where({ id: task.id });
+  async update({ id, ...task }) {
+    await this.connection.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        ...task,
+      },
+    });
   }
 
   async getDailyTasks({ search, page, limit, userId }) {
-    const [day, month, year] = new Date().toLocaleDateString().split('/');
+    const currentDate = new Date();
 
-    const currentDate = `${year}-${month}-${day}`;
+    const [day, month, year] = [
+      currentDate.getDate(),
+      currentDate.getMonth(),
+      currentDate.getFullYear(),
+    ];
 
-    const count = await knex('tasks')
-      .where({ userId })
-      .whereBetween('deadline', [
-        `${currentDate} 00:00:00`,
-        `${currentDate} 23:59:59`,
-      ])
-      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
-      .count('id', { as: 'value' })
-      .first();
+    const yesterdayDate = `${year}-${month + 1}-${day - 1}`;
+    const tomorrowDate = `${year}-${month + 1}-${day + 1}`;
 
-    const tasks = await knex('tasks')
-      .where({ userId })
-      .whereBetween('deadline', [
-        `${currentDate} 00:00:00`,
-        `${currentDate} 23:59:59`,
-      ])
-      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
-      .limit(4)
-      .offset(page * limit - limit)
-      .orderBy('deadline', 'DESC');
+    const count = await this.connection.count({
+      where: {
+        userId,
+        deadline: {
+          lt: new Date(tomorrowDate),
+          gt: new Date(yesterdayDate),
+        },
+        name: {
+          startsWith: search,
+        },
+      },
+    });
 
-    return { tasks, count: count.value };
+    const tasks = await this.connection.findMany({
+      where: {
+        userId,
+        deadline: {
+          lt: new Date(tomorrowDate),
+          gt: new Date(yesterdayDate),
+        },
+        name: {
+          startsWith: search,
+        },
+      },
+      orderBy: {
+        deadline: 'desc',
+      },
+      take: limit,
+      skip: page * limit - limit,
+    });
+
+    return { tasks, count };
   }
 
   async findByUser({ search, page, limit, userId }) {
-    const count = await knex('tasks')
-      .where({ userId })
-      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
-      .count('id', { as: 'value' })
-      .first();
+    const count = await this.connection.count({
+      where: {
+        userId,
+        name: {
+          startsWith: search,
+        },
+      },
+    });
 
-    const tasks = await knex('tasks')
-      .where({ userId })
-      .whereRaw('LOWER(name) LIKE ?', `${search.toLowerCase()}%`)
-      .limit(limit)
-      .offset(page * limit - limit)
-      .orderBy('deadline', 'DESC');
+    const tasks = await this.connection.findMany({
+      where: {
+        userId,
+        name: {
+          startsWith: search,
+        },
+      },
+      orderBy: {
+        deadline: 'desc',
+      },
+      take: limit,
+      skip: page * limit - limit,
+    });
 
-    return { tasks, count: count.value };
+    return { tasks, count };
   }
 
   async getStats(userId) {
     const date = new Date().getTime();
 
-    const uncompletedTasks = await knex('tasks').where({
-      userId,
-      done: false,
+    const tasks = await this.connection.findMany({
+      where: {
+        userId,
+      },
     });
 
-    const expiredTasksCount = uncompletedTasks.filter(
+    const expiredTasksCount = tasks.filter(
       (task) => new Date(task.deadline).getTime() < date
     );
 
-    const finishedTasksCount = await knex('tasks')
-      .where({ userId, done: true })
-      .count('id', { as: 'count' })
-      .first();
+    const finishedTasksCount = tasks.filter((task) => task.done);
 
-    const [totalTasksCount] = await knex('tasks')
-      .where({ userId })
-      .count('id', { as: 'count' });
+    const totalTasksCount = await this.connection.count({
+      where: {
+        userId,
+      },
+    });
 
     return {
-      finishedTasksCount: finishedTasksCount.count,
-      totaltasksCount: totalTasksCount.count,
+      finishedTasksCount: finishedTasksCount.length,
+      totaltasksCount: totalTasksCount,
       expiredTasksCount: Number(expiredTasksCount.length),
     };
   }
 
   async markAsDone({ id: taskId }) {
-    await knex('tasks').update({ done: true }).where({ id: taskId });
+    await this.connection.update({
+      where: {
+        id: Number(taskId),
+      },
+      data: { done: true },
+    });
   }
 }
