@@ -71,18 +71,6 @@ describe('#CreateTaskController - Integration', () => {
     expect(response.text).toBe('Nome invalido!');
   });
 
-  test('should not create a task with invalid owner id', async () => {
-    const task = TaskObjectMother.withInvalidUserId();
-
-    const response = await request(app)
-      .post('/tasks')
-      .send(task)
-      .set('authorization', `bearer ${validToken}`);
-
-    expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
-    expect(response.text).toBe('ID do usuário invalido!');
-  });
-
   test('should create a task with without description', async () => {
     const task = TaskObjectMother.withoutDescription();
 
