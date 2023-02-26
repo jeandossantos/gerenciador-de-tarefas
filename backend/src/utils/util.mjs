@@ -5,6 +5,10 @@ export class Util {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(salt));
   }
 
+  static formatterDate(data) {
+    return new Date(data).toISOString().replace('T', ' ').slice(0, 19);
+  }
+
   static STATUS_CODES = {
     Continue: 100,
     Switching_Protocols: 101,
