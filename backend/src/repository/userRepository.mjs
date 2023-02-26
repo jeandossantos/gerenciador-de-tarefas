@@ -1,41 +1,77 @@
-import { connection as knex } from '../database/knex.mjs';
+import { prisma } from '../database/prisma.mjs';
 import { BaseUserRepository } from './base/baseUserRepository.mjs';
 
 export class UserRepository extends BaseUserRepository {
+  constructor() {
+    super();
+
+    this.connection = prisma.users;
+  }
+
   async findByEmail(email) {
-    return await knex('users').where({ email }).first();
+    return await this.connection.findFirst({
+      where: {
+        email,
+      },
+    });
   }
 
   async create(user) {
-    await knex.transaction(async (trx) => {
-      const [createdUser] = await trx('users').insert(user, 'id');
+    const tarefaDefault = {
+      name: 'Primeiro Login',
+      description: 'Está é uma tarefa criada por padrão pelo sistema.',
+      priority: 0,
+      deadline: new Date(),
+      done: false,
+    };
 
-      const tarefaDefault = {
-        name: 'Primeiro Login',
-        description: 'Está é uma tarefa criada por padrão pelo sistema.',
-        priority: 0,
-        deadline: new Date(),
-        done: false,
-        userId: createdUser.id,
-      };
-
-      await trx('tasks').insert(tarefaDefault);
+    await this.connection.create({
+      data: {
+        ...user,
+        tasks: {
+          create: {
+            ...tarefaDefault,
+          },
+        },
+      },
     });
   }
 
   async findById(id) {
-    return await knex('users').where({ id }).first();
+    return await this.connection.findFirst({
+      where: {
+        id,
+      },
+    });
   }
 
   async remove(id) {
-    return await knex('users').where({ id }).del();
+    return await this.connection.delete({
+      where: {
+        id,
+      },
+    });
   }
 
   async updatePassword({ id, newPassword }) {
-    return await knex('users').update({ password: newPassword }).where({ id });
+    return await this.connection.update({
+      where: {
+        id,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
   }
 
-  async update(user) {
-    return await knex('users').update(user).where({ id: user.id });
+  async update({ id, ...user }) {
+    return await this.connection.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        ...user,
+      },
+    });
   }
 }
