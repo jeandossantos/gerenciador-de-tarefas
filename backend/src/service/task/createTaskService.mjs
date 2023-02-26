@@ -1,5 +1,5 @@
 import { TaskError } from '../../errors/taskError.mjs';
-
+import { Util } from '../../utils/util.mjs';
 import { existsOrError } from '../../validation.mjs';
 
 function createTaskServiceValidation(task) {
@@ -21,7 +21,7 @@ export class CreateTaskService {
       name,
       description,
       priority,
-      deadline,
+      deadline: Util.formatterDate(deadline),
       done,
       userId,
     });
