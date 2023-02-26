@@ -6,14 +6,9 @@ export class CreateTaskController {
   }
 
   async handle(req, res) {
-    const {
-      name,
-      description = '',
-      priority,
-      done,
-      deadline,
-      userId,
-    } = req.body;
+    const { name, description = '', priority, done, deadline } = req.body;
+
+    const userId = req.user_id;
 
     await this.createTaskService.execute({
       name,
