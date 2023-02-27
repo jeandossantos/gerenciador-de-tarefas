@@ -26,8 +26,9 @@ A aplicação é uma ferramenta simples de criação e controle de tarefas.
 - Node.js
 - Express
 - PostgreSQL
-- Knex.js
-- Autenticação com Passport usando estratégia JWT
+- prisma
+- Autenticação JWT
+- Testes com jest e supertest
 ## Front end
 - Vue JS
 - Vuex
@@ -39,18 +40,22 @@ A aplicação é uma ferramenta simples de criação e controle de tarefas.
 ## Como executar o projeto
 
 ### Back end
-Pré-requisitos: Node JS 14.15.4
 
 ```bash
 # clonar repositório
-git clone https://github.com/TXTDBR/gerenciador_de_tarefas.git
+git clone https://github.com/jeandossantos/gerenciador-de-tarefas.git
 
 # entrar na pasta do projeto back end
 cd backend
+
 # instalar dependências
-npm i
+npm ci | npm i
+
+# roda migrations
+npx prisma migrate:dev
+ 
 # executar o projeto
-npm start
+npm run dev
 ```
 
 ## Front end web
@@ -58,7 +63,7 @@ Pré-requisitos: npm
 
 ```bash
 # clonar repositório
-git clone https://github.com/TXTDBR/gerenciador_de_tarefas.git
+git clone https://github.com/jeandossantos/gerenciador-de-tarefas.git
 
 # entrar na pasta do projeto front end web
 cd frontend
