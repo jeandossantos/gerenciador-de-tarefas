@@ -6,7 +6,7 @@ export class RemoveUserController {
   }
 
   async handle(req, res) {
-    const { id = '' } = req.params;
+    const { id } = req.params;
     const { userpassword: password = '' } = req.headers;
 
     await this.removeUserService.execute({ id, password });
