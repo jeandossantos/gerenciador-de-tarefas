@@ -3,79 +3,50 @@ import {
   test,
   describe,
   expect,
-  beforeEach,
+  beforeAll,
   afterAll,
 } from '@jest/globals';
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import supertest from 'supertest';
 
 import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
 import { Util } from '../../../src/utils/util.mjs';
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
 
-import { connection as knex } from '../../../src/database/knex.mjs';
+function tokenGenerator({ id, email }) {
+  const token = jwt.sign({ id, email }, process.env.SECRET_OR_KEY);
 
-async function createUser({ name, email, initials, password }) {
-  return await knex('users').insert({
-    name,
-    email,
-    initials,
-    password: Util.encryptPassword(password),
-  });
+  return `bearer ${token}`;
 }
 
+const { user: EXISTING_USER } = await populateDatabase();
+
 describe('#RemoveUserController - Integration', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
+  const user = UserObjectMother.valid();
+  EXISTING_USER.password = user.password;
+
+  let VALID_TOKEN = tokenGenerator({
+    email: EXISTING_USER,
+    id: EXISTING_USER.id,
   });
 
-  let existingUser = null;
-  let validToken = null;
-
-  beforeAll(async () => {
-    await knex('users').where('id', '>', 1).del();
-
-    const { password, initials, confirmPassword } = UserObjectMother.valid();
-
-    existingUser = {
-      name: 'existing-user',
-      initials,
-      email: 'existing-user@example.com',
-      password,
-      confirmPassword,
-    };
-
-    const [userId] = await createUser(existingUser);
-
-    existingUser.id = userId;
-
-    validToken = jwt.sign(
-      { id: existingUser.id, email: existingUser.email },
-      process.env.SECRET_OR_KEY
-    );
-  });
-
-  afterAll(async () => {
-    return await knex('users').where({ id: existingUser.id }).del();
-  });
+  const request = supertest(app);
 
   test('should not remove a user without authorization token', async () => {
     const user = UserObjectMother.withInvalidId();
 
-    const response = await request(app)
-      .delete(`/users/${user.id}`)
-      .set('userpassword', '');
+    const response = await request.delete(`/users/${EXISTING_USER.id}`);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
   });
 
-  test('should fail with invalid id', async () => {
+  test('should not remove a user fail with invalid id', async () => {
     const user = UserObjectMother.withInvalidId();
 
-    const response = await request(app)
+    const response = await request
       .delete(`/users/${user.id}`)
-      .set('authorization', 'bearer ' + validToken)
+      .set('authorization', VALID_TOKEN)
       .set('userpassword', '');
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
@@ -86,9 +57,9 @@ describe('#RemoveUserController - Integration', () => {
   test('#RemoveUserService should fail with invalid password', async () => {
     const invalidPassword = '';
 
-    const response = await request(app)
-      .delete(`/users/${existingUser.id}`)
-      .set('authorization', 'bearer ' + validToken)
+    const response = await request
+      .delete(`/users/${EXISTING_USER.id}`)
+      .set('authorization', VALID_TOKEN)
       .set('userpassword', invalidPassword);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
@@ -98,9 +69,9 @@ describe('#RemoveUserController - Integration', () => {
 
   test('#RemoveUserService should fail if user password does not Match', async () => {
     const invalidPassword = UserObjectMother.withInvalidPassword();
-    const response = await request(app)
-      .delete(`/users/${existingUser.id}`)
-      .set('authorization', 'bearer ' + validToken)
+    const response = await request
+      .delete(`/users/${EXISTING_USER.id}`)
+      .set('authorization', VALID_TOKEN)
       .set('userpassword', invalidPassword);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
@@ -109,10 +80,10 @@ describe('#RemoveUserController - Integration', () => {
   });
 
   test('#RemoveUserService should remove a user', async () => {
-    const response = await request(app)
-      .delete(`/users/${existingUser.id}`)
-      .set('authorization', 'bearer ' + validToken)
-      .set('userpassword', existingUser.password);
+    const response = await request
+      .delete(`/users/${EXISTING_USER.id}`)
+      .set('authorization', VALID_TOKEN)
+      .set('userpassword', EXISTING_USER.password);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.No_Content);
   });

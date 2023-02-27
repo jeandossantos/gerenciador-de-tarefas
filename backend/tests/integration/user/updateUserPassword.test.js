@@ -1,69 +1,47 @@
-import { jest, test, describe, expect, afterAll } from '@jest/globals';
-import request from 'supertest';
+import { test, describe, expect, afterAll } from '@jest/globals';
+import supertest from 'supertest';
 import jwt from 'jsonwebtoken';
 
 import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
 import { Util } from '../../../src/utils/util.mjs';
-
-import { connection as knex } from '../../../src/database/knex.mjs';
-
-async function createUser({ name, email, initials, password }) {
-  return await knex('users').insert({
-    name,
-    email,
-    initials,
-    password: Util.encryptPassword(password),
-  });
-}
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
 
 function tokenGenerator({ id, email }) {
   const token = jwt.sign({ id, email }, process.env.SECRET_OR_KEY);
 
-  return token;
+  return `bearer ${token}`;
 }
+
+const { user: EXISTING_USER } = await populateDatabase();
 
 describe('#UpdateUserPasswordController - Integration', () => {
   const user = UserObjectMother.valid();
+  EXISTING_USER.password = user.password;
 
-  let existingUser = Object.assign({}, user, {
-    name: 'existing-user',
-    email: 'existing-user@example.com',
+  const VALID_TOKEN = tokenGenerator({
+    email: EXISTING_USER,
+    id: EXISTING_USER.id,
   });
 
-  let validToken = null;
-
-  beforeAll(async () => {
-    await knex('users').where('id', '>', 1).del();
-
-    const [userId] = await createUser(existingUser);
-
-    existingUser.id = userId;
-
-    validToken = tokenGenerator({ id: userId, email: existingUser.email });
-  });
-
-  afterAll(async () => {
-    return await knex('users').where({ id: existingUser.id }).del();
-  });
+  const request = supertest(app);
 
   const INVALID_PASSWORD = '';
   const INVALID_CURRENT_PASSWORD = 'invalid-current-password';
   const INVALID_CONFIRM_NEW_PASSWORD = '987654321';
 
-  const CURRENT_PASSWORD = existingUser.password;
-  const NEW_PASSWORD = 'new-password';
-  const VALID_NEW_PASSWORD = '0123456789';
+  const CURRENT_PASSWORD = EXISTING_USER.password;
+  const VALID_NEW_PASSWORD = 'new-password';
 
   test('should not update without authorization token', async () => {
     const data = {
       oldPassword: CURRENT_PASSWORD,
-      newPassword: NEW_PASSWORD,
-      confirmPassword: NEW_PASSWORD,
+      newPassword: VALID_NEW_PASSWORD,
+      confirmPassword: VALID_NEW_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
       .send(data);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
@@ -76,10 +54,10 @@ describe('#UpdateUserPasswordController - Integration', () => {
       confirmNewPassword: INVALID_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
       .send(data)
-      .set('authorization', 'bearer ' + validToken);
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
 
@@ -93,10 +71,10 @@ describe('#UpdateUserPasswordController - Integration', () => {
       confirmNewPassword: INVALID_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
       .send(data)
-      .set('authorization', 'bearer ' + validToken);
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
     expect(response.text).toBe('Nova senha invalida!');
@@ -104,19 +82,15 @@ describe('#UpdateUserPasswordController - Integration', () => {
 
   test('should not update the password of the user if the new password and confirm new password does not match', async () => {
     const data = {
-      ldPassword: CURRENT_PASSWORD,
+      oldPassword: CURRENT_PASSWORD,
       newPassword: VALID_NEW_PASSWORD,
       confirmNewPassword: INVALID_CONFIRM_NEW_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
-      .send({
-        oldPassword: existingUser.password,
-        newPassword: VALID_NEW_PASSWORD,
-        confirmNewPassword: INVALID_CONFIRM_NEW_PASSWORD,
-      })
-      .set('authorization', 'bearer ' + validToken);
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
+      .send(data)
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
     expect(response.text).toBe('Senhas não coincidem!');
@@ -129,10 +103,10 @@ describe('#UpdateUserPasswordController - Integration', () => {
       confirmNewPassword: VALID_NEW_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
       .send(data)
-      .set('authorization', 'bearer ' + validToken);
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
     expect(response.text).toBe('Senha do usuário incorreta!');
@@ -145,10 +119,10 @@ describe('#UpdateUserPasswordController - Integration', () => {
       confirmNewPassword: VALID_NEW_PASSWORD,
     };
 
-    const response = await request(app)
-      .put('/users/update/' + existingUser.id)
+    const response = await request
+      .put('/users/update/' + EXISTING_USER.id)
       .send(data)
-      .set('authorization', 'bearer ' + validToken);
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.No_Content);
   });

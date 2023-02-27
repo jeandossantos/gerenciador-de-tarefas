@@ -1,60 +1,36 @@
 import { expect, describe, test, beforeAll, afterAll } from '@jest/globals';
-
-import request from 'supertest';
+import supertest from 'supertest';
 import jwt from 'jsonwebtoken';
 
 import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
 import { TaskObjectMother } from '../../model/task/taskObjectMother.mjs';
 import { Util } from '../../../src/utils/util.mjs';
-
-import { connection as knex } from '../../../src/database/knex.mjs';
-
-async function createUser({ name, email, initials, password }) {
-  return await knex('users').insert({
-    name,
-    email,
-    initials,
-    password: Util.encryptPassword(password),
-  });
-}
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
 
 function tokenGenerator({ id, email }) {
   const token = jwt.sign({ id, email }, process.env.SECRET_OR_KEY);
 
-  return token;
+  return `bearer ${token}`;
 }
+
+const { user: EXISTING_USER } = await populateDatabase();
 
 describe('#CreateTaskController - Integration', () => {
   const user = UserObjectMother.valid();
+  EXISTING_USER.password = user.password;
 
-  let existingUser = Object.assign({}, user, {
-    name: 'existing-user',
-    email: 'existing-user@example.com',
+  const VALID_TOKEN = tokenGenerator({
+    id: EXISTING_USER.id,
+    email: EXISTING_USER.email,
   });
 
-  let validToken = null;
-
-  beforeAll(async () => {
-    await knex('users').where('id', '>', 1).del();
-
-    const [userId] = await createUser(existingUser);
-
-    existingUser.id = userId;
-
-    validToken = tokenGenerator({ id: userId, email: existingUser.email });
-  });
-
-  afterAll(async () => {
-    await knex('users').where({ id: existingUser.id }).del();
-
-    return await knex('tasks').where('id', '>', 1).del();
-  });
+  const request = supertest(app);
 
   test('should not create a task without authorization token', async () => {
     const task = TaskObjectMother.valid();
 
-    const response = await request(app).post('/tasks').send(task);
+    const response = await request.post('/tasks').send(task);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
   });
@@ -62,10 +38,10 @@ describe('#CreateTaskController - Integration', () => {
   test('should not create a task with invalid name', async () => {
     const task = TaskObjectMother.withInvalidName();
 
-    const response = await request(app)
+    const response = await request
       .post('/tasks')
       .send(task)
-      .set('authorization', `bearer ${validToken}`);
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Bad_Request);
     expect(response.text).toBe('Nome invalido!');
@@ -74,10 +50,10 @@ describe('#CreateTaskController - Integration', () => {
   test('should create a task with without description', async () => {
     const task = TaskObjectMother.withoutDescription();
 
-    const response = await request(app)
+    const response = await request
       .post('/tasks')
-      .send({ ...task, userId: existingUser.id })
-      .set('authorization', `bearer ${validToken}`);
+      .send({ ...task, userId: EXISTING_USER.id })
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Created);
   });
@@ -85,10 +61,10 @@ describe('#CreateTaskController - Integration', () => {
   test('should create a task with without priority', async () => {
     const task = TaskObjectMother.withoutPriority();
 
-    const response = await request(app)
+    const response = await request
       .post('/tasks')
-      .send({ ...task, userId: existingUser.id })
-      .set('authorization', `bearer ${validToken}`);
+      .send({ ...task, userId: EXISTING_USER.id })
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Created);
   });
@@ -96,10 +72,10 @@ describe('#CreateTaskController - Integration', () => {
   test('should create a task with without done', async () => {
     const task = TaskObjectMother.withoutDone();
 
-    const response = await request(app)
+    const response = await request
       .post('/tasks')
-      .send({ ...task, userId: existingUser.id })
-      .set('authorization', `bearer ${validToken}`);
+      .send({ ...task, userId: EXISTING_USER.id })
+      .set('authorization', VALID_TOKEN);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Created);
   });

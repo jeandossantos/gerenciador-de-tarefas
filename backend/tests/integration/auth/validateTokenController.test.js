@@ -1,88 +1,57 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { test, describe, expect, beforeAll } from '@jest/globals';
-import request from 'supertest';
+import { test, describe, expect, beforeAll, afterAll } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 
 import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
-import { Util } from '../../../src/utils/util.mjs';
-import { connection as knex } from '../../../src/database/knex.mjs';
+import supertest from 'supertest';
 
-async function createUser({ name, email, initials, password }) {
-  return await knex('users').insert({
-    name,
-    email,
-    initials,
-    password: Util.encryptPassword(password),
-  });
-}
+import { Util } from '../../../src/utils/util.mjs';
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
+import { NONEXISTENT_USER } from '../../mock/nonexistent-user.mjs';
+
+const { user: EXISTING_USER } = await populateDatabase();
 
 describe('#Validate Token - Integration', () => {
-  let existingUser = null;
+  const user = UserObjectMother.valid();
+  EXISTING_USER.password = user.password;
 
-  beforeAll(async () => {
-    await knex('users').where('id', '>', 1).del();
-
-    const { password, initials, confirmPassword } = UserObjectMother.valid();
-
-    existingUser = {
-      name: 'existing-user',
-      initials,
-      email: 'existing-user@example.com',
-      password,
-      confirmPassword,
-    };
-
-    const [userId] = await createUser(existingUser);
-
-    existingUser.id = userId;
-  });
-
-  afterAll(async () => {
-    return await knex('users').where({ id: existingUser.id }).del();
-  });
+  const request = supertest(app);
 
   test('should returns false with invalid token', async () => {
     const invalidToken = 'bearer invalid token';
 
-    const response = await request(app)
+    const response = await request
       .post('/validatetoken')
-      .set('Authorization', `Bearer ${invalidToken}`);
+      .set('Authorization', `bearer ${invalidToken}`);
 
-    expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
+    expect(response.statusCode).toBe(Util.STATUS_CODES.OK);
     expect(response.body).toBe(false);
   });
 
   test('should returns false if user was not found', async () => {
-    const { password } = UserObjectMother.valid();
-
-    const nonexistentUser = {
-      email: 'noneistent-user@example.com',
-      password,
-    };
-
-    const validToken = jwt.sign(
-      { id: nonexistentUser.id, email: nonexistentUser.email },
+    const VALID_TOKEN_WITH_NONEXISTENT_USER = jwt.sign(
+      NONEXISTENT_USER,
       process.env.SECRET_OR_KEY
     );
 
-    const response = await request(app)
+    const response = await request
       .post('/validatetoken')
-      .send({ token: validToken });
+      .send({ token: VALID_TOKEN_WITH_NONEXISTENT_USER });
 
-    expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
+    expect(response.statusCode).toBe(Util.STATUS_CODES.OK);
     expect(response.body).toBe(false);
   });
 
   test('should returns true with valid token', async () => {
     const validToken = jwt.sign(
-      { id: existingUser.id, email: existingUser.email },
+      { id: EXISTING_USER.id, email: EXISTING_USER.email },
       process.env.SECRET_OR_KEY
     );
 
-    const response = await request(app)
+    const response = await request
       .post('/validatetoken')
       .send({ token: validToken });
 

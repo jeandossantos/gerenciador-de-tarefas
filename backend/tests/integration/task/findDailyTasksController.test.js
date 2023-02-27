@@ -1,4 +1,4 @@
-import { expect, describe, test, beforeAll, afterAll } from '@jest/globals';
+import { expect, describe, test, afterAll, beforeAll } from '@jest/globals';
 
 import supertest from 'supertest';
 import jwt from 'jsonwebtoken';
@@ -7,25 +7,8 @@ import { app } from '../../../src/app.mjs';
 import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
 import { Util } from '../../../src/utils/util.mjs';
 
-import { connection as knex } from '../../../src/database/knex.mjs';
-
-async function createUser({ name, email, initials, password }) {
-  await knex('users').del();
-
-  return await knex('users').insert(
-    {
-      name,
-      email,
-      initials,
-      password: Util.encryptPassword(password),
-    },
-    'id'
-  );
-}
-
-async function createTasks(tasks) {
-  return await knex('tasks').insert(tasks);
-}
+import { NONEXISTENT_USER } from '../../mock/nonexistent-user.mjs';
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
 
 function tokenGenerator({ id, email }) {
   const token = jwt.sign({ id, email }, process.env.SECRET_OR_KEY);
@@ -33,62 +16,16 @@ function tokenGenerator({ id, email }) {
   return token;
 }
 
-const user = UserObjectMother.valid();
+const { user: EXISTING_USER } = await populateDatabase();
 
-let existingUser = Object.assign({}, user, {
-  name: 'existing-user',
-  email: 'existing-user@example.com',
-  initiais: user.initials,
-});
+describe('#FindDailyTasksController - Integration', () => {
+  const user = UserObjectMother.valid();
+  EXISTING_USER.password = user.password;
 
-const [createdUser] = await createUser(existingUser);
-
-existingUser.id = createdUser.id;
-
-const tasks = [
-  {
-    name: 'my task 1',
-    done: true,
-    userId: existingUser.id,
-    priority: 0,
-    deadline: new Date(),
-  },
-  {
-    name: ' my task 2',
-    done: false,
-    userId: existingUser.id,
-    priority: 0,
-    deadline: new Date(),
-  },
-  {
-    name: 'my task 3',
-    done: true,
-    userId: existingUser.id,
-    priority: 0,
-    deadline: new Date(),
-  },
-  {
-    name: 'my  task 4',
-    done: false,
-    userId: existingUser.id,
-    priority: 0,
-    deadline: new Date(),
-  },
-];
-
-describe('#FindTasksController - Integration', () => {
-  beforeAll(() => createTasks(tasks));
-
-  afterAll(async () => {
-    return await knex('users').where({ id: existingUser.id }).del();
-  });
-
-  const VALID_TOKEN =
-    'bearer ' +
-    tokenGenerator({
-      id: existingUser.id,
-      email: existingUser.email,
-    });
+  const VALID_TOKEN = `bearer ${tokenGenerator({
+    id: EXISTING_USER.id,
+    email: EXISTING_USER.email,
+  })}`;
 
   const request = supertest(app);
 
@@ -99,6 +36,19 @@ describe('#FindTasksController - Integration', () => {
   });
 
   test('should not find daily tasks with invalid owner id', async () => {
+    const VALID_TOKEN_WITH_NONEXISTENT_USER = jwt.sign(
+      NONEXISTENT_USER,
+      process.env.SECRET_OR_KEY
+    );
+
+    const response = await request
+      .get('/tasks/daily')
+      .set('Authorization', VALID_TOKEN_WITH_NONEXISTENT_USER);
+
+    expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
+  });
+
+  test('should be return exactly 3 tasks', async () => {
     const response = await request
       .get('/tasks/daily')
       .set('Authorization', VALID_TOKEN);

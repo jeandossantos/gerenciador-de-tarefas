@@ -1,89 +1,30 @@
-import { expect, describe, test, beforeAll, afterAll } from '@jest/globals';
+import { expect, describe, test, afterAll, beforeAll } from '@jest/globals';
 import supertest from 'supertest';
 import jwt from 'jsonwebtoken';
 
 import { app } from '../../../src/app.mjs';
-import { UserObjectMother } from '../../model/user/userObjectMother.mjs';
 import { TaskObjectMother } from '../../model/task/taskObjectMother.mjs';
 import { Util } from '../../../src/utils/util.mjs';
-
-import { connection as knex } from '../../../src/database/knex.mjs';
-
-async function createUser({ name, email, initials, password }) {
-  return await knex('users').insert({
-    name,
-    email,
-    initials,
-    password: Util.encryptPassword(password),
-  });
-}
-
-async function createTask({
-  name,
-  description,
-  priority,
-  done,
-  userId,
-  deadline,
-}) {
-  return await knex('tasks').insert(
-    {
-      name,
-      description,
-      priority,
-      done,
-      deadline,
-      userId,
-    },
-    'id'
-  );
-}
+import { clearDatabase, populateDatabase } from '../../TestService.mjs';
 
 function tokenGenerator({ id, email }) {
   const token = jwt.sign({ id, email }, process.env.SECRET_OR_KEY);
 
-  return token;
+  return `bearer ${token}`;
 }
 
+const { user: EXISTING_USER, task: EXISTING_TASK } = await populateDatabase();
+
 describe('#UpdateTaskController - Integration', () => {
-  const user = UserObjectMother.valid();
-  const task = TaskObjectMother.valid();
-
-  let existingUser = Object.assign({}, user, {
-    name: 'existing-user',
-    email: 'existing-user@example.com',
-    initiais: user.initials,
+  const VALID_TOKEN = tokenGenerator({
+    id: EXISTING_USER.id,
+    email: EXISTING_USER.email,
   });
-
-  let existingTask = Object.assign({}, task, {
-    name: 'markAsDoneTest',
-  });
-
-  beforeAll(async () => {
-    await knex('users').where('id', '>', 1).del();
-
-    const [userId] = await createUser(existingUser);
-
-    existingUser.id = userId;
-
-    const [task] = await createTask({ ...existingTask, userId });
-
-    existingTask.id = task.id;
-  });
-
-  afterAll(() => knex('users').del());
-
-  const VALID_TOKEN =
-    'bearer ' +
-    tokenGenerator({
-      id: existingUser.id,
-      email: existingUser.email,
-    });
 
   const request = supertest(app);
 
   test('should return 401 with invalid authentication token', async () => {
-    const response = await request.put(`/tasks/${existingTask.id}`);
+    const response = await request.put(`/tasks/${EXISTING_TASK.id}`);
 
     expect(response.statusCode).toBe(Util.STATUS_CODES.Unauthorized);
   });
@@ -92,7 +33,7 @@ describe('#UpdateTaskController - Integration', () => {
     const task = TaskObjectMother.withInvalidName();
 
     const response = await request
-      .put(`/tasks/${existingTask.id}`)
+      .put(`/tasks/${EXISTING_TASK.id}`)
       .send(task)
       .set('authorization', VALID_TOKEN);
 
@@ -100,11 +41,11 @@ describe('#UpdateTaskController - Integration', () => {
     expect(response.text).toBe('Nome invalido!');
   });
 
-  test('should update a user with an valid user', async () => {
+  test('should update a task', async () => {
     const task = TaskObjectMother.valid();
 
     const response = await request
-      .put(`/tasks/${existingTask.id}`)
+      .put(`/tasks/${EXISTING_TASK.id}`)
       .send(task)
       .set('authorization', VALID_TOKEN);
 
