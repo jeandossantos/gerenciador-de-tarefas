@@ -38,17 +38,17 @@ export class UserRepository extends BaseUserRepository {
   }
 
   async findById(id) {
-    return await this.connection.findFirst({
+    return await this.connection.findUnique({
       where: {
-        id,
+        id: parseInt(id),
       },
     });
   }
 
-  async remove(id) {
+  async remove({ id }) {
     return await this.connection.delete({
       where: {
-        id,
+        id: parseInt(id),
       },
     });
   }
@@ -56,7 +56,7 @@ export class UserRepository extends BaseUserRepository {
   async updatePassword({ id, newPassword }) {
     return await this.connection.update({
       where: {
-        id,
+        id: Number(id),
       },
       data: {
         password: newPassword,
@@ -67,7 +67,7 @@ export class UserRepository extends BaseUserRepository {
   async update({ id, ...user }) {
     return await this.connection.update({
       where: {
-        id: Number(id),
+        id: parseInt(id),
       },
       data: {
         ...user,

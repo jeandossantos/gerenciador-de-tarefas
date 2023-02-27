@@ -46,7 +46,7 @@ export class TaskRepository extends BaseTaskRepository {
 
     const count = await this.connection.count({
       where: {
-        userId,
+        userId: Number(userId),
         deadline: {
           lt: new Date(tomorrowDate),
           gt: new Date(yesterdayDate),
@@ -59,7 +59,7 @@ export class TaskRepository extends BaseTaskRepository {
 
     const tasks = await this.connection.findMany({
       where: {
-        userId,
+        userId: Number(userId),
         deadline: {
           lt: new Date(tomorrowDate),
           gt: new Date(yesterdayDate),
@@ -81,7 +81,7 @@ export class TaskRepository extends BaseTaskRepository {
   async findByUser({ search, page, limit, userId }) {
     const count = await this.connection.count({
       where: {
-        userId,
+        userId: Number(userId),
         name: {
           startsWith: search,
         },
@@ -90,7 +90,7 @@ export class TaskRepository extends BaseTaskRepository {
 
     const tasks = await this.connection.findMany({
       where: {
-        userId,
+        userId: Number(userId),
         name: {
           startsWith: search,
         },
@@ -110,7 +110,7 @@ export class TaskRepository extends BaseTaskRepository {
 
     const tasks = await this.connection.findMany({
       where: {
-        userId,
+        userId: Number(userId),
       },
     });
 
@@ -122,7 +122,7 @@ export class TaskRepository extends BaseTaskRepository {
 
     const totalTasksCount = await this.connection.count({
       where: {
-        userId,
+        userId: Number(userId),
       },
     });
 
